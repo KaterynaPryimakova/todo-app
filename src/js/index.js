@@ -7,11 +7,12 @@ const todoArr = JSON.parse(localStorage.getItem(LS_KEY)) ?? [];
 
 btnAdd.addEventListener('click', todo);
 todoList.addEventListener('click', onListClick);
+todoList.addEventListener('click', onDelClick);
 
 if (todoArr.length) {
   const todosMarkup = todoArr.map(createMarkup).join('');
-  console.log(todosMarkup);
-  list.insertAdjacentHTML('beforeend', todosMarkup);
+
+  todoList.insertAdjacentHTML('beforeend', todosMarkup);
 }
 
 function todo() {
@@ -51,4 +52,30 @@ function onListClick(event) {
     event.target.lastElementChild.classList.remove('btn-delete');
     event.target.lastElementChild.classList.add('btn-update');
   }
+  changeLSStatus(event.target);
+}
+
+function changeLSStatus(currentEl) {
+  const dataLS = JSON.parse(localStorage.getItem(LS_KEY));
+  const changeArr = dataLS.map(obj => {
+    if (obj.id === Number(currentEl.id)) {
+      obj.status = currentEl.classList[0];
+    }
+    return obj;
+  });
+
+  localStorage.setItem(LS_KEY, JSON.stringify(changeArr));
+}
+
+function onDelClick(event) {
+  if (!event.target.classList.contains('btn-delete')) {
+    return;
+  }
+  const dataLS = JSON.parse(localStorage.getItem(LS_KEY));
+  const newArr = dataLS.filter(
+    item => event.target.closest('li').id !== item.id
+  );
+  console.log(newArr);
+  event.target.closest('li').remove();
+  localStorage.setItem(LS_KEY, JSON.stringify(newArr));
 }
